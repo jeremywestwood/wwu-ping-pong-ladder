@@ -23,6 +23,8 @@
         parser.parse();
         
         ready(function() {
+            // not yet working
+            return;
             var users_grid = registry.byId("users_grid");
             
             var structure = [
@@ -57,6 +59,7 @@
 {% block action_bar %}{% end %}
 
 {% block cookie_crumb_bar %}
+<a href="/admin/Add-User">Add User</a> --
 <a href="/Leaderboard">Leaderboard</a> --
 <a href="/Leaderboard/Match-History">Match History</a>
 {% end %}
