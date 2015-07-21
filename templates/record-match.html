@@ -129,7 +129,6 @@ function(parser, domReady, ready, FilteringSelect, BorderContainer, ContentPane,
 {% for gnum in range(1) %}
     {% for pnum in range(2) %}
                 <input class="game_score_input" id="score_g{{ gnum }}_p{{ pnum }}" name="score_g{{ gnum }}_p{{ pnum }}" data-dojo-type="dijit/form/NumberSpinner"  
-                    data-dojo-props="validator:dojox.validate.isInRange, constraints:{ min:0, max:11 }, invalidMessage: 'Game scores must be within the range of 0 to 11.'" 
                     value='0' />
     {% end %}
     <br>
