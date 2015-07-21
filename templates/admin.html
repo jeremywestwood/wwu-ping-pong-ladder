@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Ping Pong Ladder Admin{% end %}
+
+{% block head %}
+<style>
+@import "//ajax.googleapis.com/ajax/libs/dojo/1.8/dojox/grid/resources/claroGrid.css";
+</style>
+
+<script src="/static/user_store.js"></script>
+<script>
+    require(["dojo/parser", 
+             "dojo/domReady!", 
+             "dojo/ready", 
+             "dojo/on",  
+             "dojo/_base/lang", 
+             "dijit/registry", 
+             "dijit/layout/BorderContainer", 
+             "dijit/layout/ContentPane", 
+             "dijit/form/Button", 
+             "dojox/grid/DataGrid"],
+    function(parser, domReady, ready, on, lang, registry, BorderContainer, ContentPane, Button, DataGrid){
+        parser.parse();
+        
+        ready(function() {
+            var users_grid = registry.byId("users_grid");
+            
+            var structure = [
+                {name: 'Username', field: 'username', width: '25%'},
+                {name: 'Display Name', field: 'displayname', width: '60%'},
+                {name: 'Email', field: 'email', width: '15%'}
+            ];
+            
+            users_grid.set('structure', structure);
+            users_grid.setStore(new objectStore({objectStore: userStore}));
+            users_grid.startup();
+        });
+    });
+</script>
+
+{% end %}
+
+{% block body %}
+
+<table data-dojo-id="users_grid" data-dojo-type="dojox/grid/DataGrid" data-dojo-props="region:'center'">
+  <thead>
+    <tr>
+      <th field="username" width="20%">Users</th>
+      <th field="displayname" width="65%">Display Name</th>
+      <th field="email" width="15%">Email</th>
+    </tr>
+  </thead>
+</table>
+
+{% end %}
+
+{% block action_bar %}{% end %}
+
+{% block cookie_crumb_bar %}
+<a href="/Leaderboard">Leaderboard</a> --
+<a href="/Leaderboard/Match-History">Match History</a>
+{% end %}

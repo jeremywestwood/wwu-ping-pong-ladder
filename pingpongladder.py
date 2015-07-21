@@ -19,7 +19,8 @@ from handlers import *
 
 handlers = [
     (r'/', FixedUserRequestHandler),
-    (r'/(logout|admin|login)$', MainRequestHandler),
+    (r'/(logout|login)$', MainRequestHandler),
+    (r'/admin$', AdminHandler),
     (r'/admin/Add-User$', AddUserHandler),
     
     (r"/", tornado.web.RedirectHandler, {"url": "/Leaderboard"}),

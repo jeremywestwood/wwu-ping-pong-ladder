@@ -2,6 +2,7 @@
 #page handlers
 from MainRequestHandler import MainRequestHandler
 from GeneralInfoHandler import GeneralInfoHandler
+from AdminHandler import AdminHandler
 from UserInfoHandler import UserInfoHandler
 from AddUserHandler import AddUserHandler
 from RecordMatchHandler import RecordMatchHandler
