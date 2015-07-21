@@ -3,6 +3,7 @@
 from MainRequestHandler import MainRequestHandler
 from GeneralInfoHandler import GeneralInfoHandler
 from UserInfoHandler import UserInfoHandler
+from AddUserHandler import AddUserHandler
 from RecordMatchHandler import RecordMatchHandler
 from UserSettingsHandler import UserSettingsHandler
 

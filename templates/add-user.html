@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Ping Pong Ladder Add User{% end %}
+
+{% block head %}
+
+<script>
+
+require(["dojo/parser", 
+         "dojo/domReady!", 
+         "dojo/ready", 
+         "dijit/form/FilteringSelect", 
+         "dijit/layout/BorderContainer", 
+         "dijit/layout/ContentPane", 
+         "dijit/form/Button", 
+         "dojox/form/Manager", 
+         "dojox/validate/web", 
+         "dijit/form/TextBox", 
+         "dojo/dom", 
+         "dijit/registry",
+         "dojo/on",
+         "dojo/dom-form",
+         "dojo/request",
+         "dojo/_base/fx"],
+function(parser, domReady, ready, FilteringSelect, BorderContainer, ContentPane, Button, 
+         FormManager, ValidateWeb, TextBox,
+         dom, registry, on, domForm, request, fx) {
+    parser.parse();
+    
+    ready(function() {
+        var messageBar = dom.byId('messageBar');
+        var message = dom.byId('message');
+        
+        var form = registry.byId("add_user_form");
+        var username_input = registry.byId("username");
+        var displayname_input = registry.byId("displayname");
+        var email_input = registry.byId("email");
+        
+        // Attach the onsubmit event handler of the form
+        var add_user_button = registry.byId('add_user_button');
+        on(add_user_button, "click", function(evt){
+            if (form.validate()) {
+                add_user_button.set('disabled', true);
+                
+                // Post the data to the server
+                request.post("/admin/Add-User", {
+                    data: domForm.toObject("add_user_form"),
+                    timeout: 2000,
+                    handleAs: "json"
+                }).then(function(response){
+                    var color = "#888888";
+                    if (response.type == "error") {
+                        color = "#FF9933";
+                    } else if (response.type == "success") {
+                        color = "#99FF33";
+                        
+                        form.reset();
+                        username_input.value = '';
+                        displayname_input.value = '';
+                        email_input.value = '';
+                        
+                        add_user_button.set('disabled', false);
+                    }
+                    
+                    message.innerHTML = response.msg;
+                    
+                    messageBar.style.background = color;
+                    messageBar.style.visibility = "visible";
+                    fx.fadeIn({ node: messageBar, duration: 1 }).play();
+                    
+                    setTimeout(function() {
+                        fx.fadeOut({ node: messageBar, duration: 1000 }).play();
+                    }, 4000);
+                    
+                });
+                
+            }
+        });
+    });
+});
+
+</script>
+
+{% end %}
+
+{% block body %}
+
+<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+
+	<div id="messageBar">
+	    <center>
+    		<div id="message">Test message</div>
+		</center>
+	</div>
+
+    <form data-dojo-type="dojox/form/Manager" id="add_user_form">
+        <center>
+            Enter the user details.
+            <br>
+            Username: <input class="username_input" id="username" name="username" data-dojo-type="dijit/form/TextBox" value='' />
+            <br>
+            Display Name: <input class="displayname_input" id="displayname" name="displayname" data-dojo-type="dijit/form/TextBox" value='' />
+            <br>
+            Email: <input class="email_input" id="email" name="email" data-dojo-type="dijit/form/TextBox" value='' />
+            </fieldset>
+        </center>
+    </form>
+</div>
+{% end %}
+
+{% block action_bar %}
+<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom'">
+    <center>
+        <button data-dojo-type="dijit/form/Button" id="add_user_button" data-dojo-props="iconClass:'icon icon_add'" type="button">Add User</button>
+        <button data-dojo-type="dijit/form/Button" onClick="document.location.href = '/admin';" data-dojo-props="iconClass:'icon icon_cancel'" type="button">Cancel</button>
+    </center>
+</div>
+{% end %}
+
+{% block cookie_crumb_bar %}
+<a href="/Leaderboard">Leaderboard</a> --
+<a href="/Leaderboard/Record-Match">Record Match</a>
+{% end %}
