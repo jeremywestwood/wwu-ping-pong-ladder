@@ -78,4 +78,7 @@
 
 {% block cookie_crumb_bar %}
 <a href="/Leaderboard">Leaderboard</a>
+{% if user.permission_level == 2 %}
+<a href="/Admin">Admin</a>
+{% end %}
 {% end %}
