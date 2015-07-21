@@ -48,7 +48,7 @@ class RecordMatchHandler(CASVerifiedRequestHandler):
             date_time = self.get_argument("date") + " " + self.get_argument("time")
             
             games = []
-            for gnum in range(3):
+            for gnum in range(1):
                 game = (int(self.get_argument("score_g{}_p0".format(gnum))), int(self.get_argument("score_g{}_p1".format(gnum))))
                 games.append(game)
         except:
@@ -70,8 +70,8 @@ class RecordMatchHandler(CASVerifiedRequestHandler):
             # filter out any games which have negative or all-zero scores
             games = filter(lambda g: all(map(lambda s: s >= 0, g)) and any(map(lambda s: s > 0, g)), games)
             
-            if len(games) < 2:
-                self.result("error", "A match consists of two or more games.")
+            if len(games) < 1:
+                self.result("error", "A match consists of one or more games.")
                 return
                 
             match = create_match(session, user1, user2, seconds, games)
