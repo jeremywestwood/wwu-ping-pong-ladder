@@ -34,6 +34,7 @@ handlers = [
     (r'/Leaderboard/(\d+)$', UserInfoHandler),
     
     (r'/Leaderboard/Match-History/data/(?:undefined)?(\d*)', MatchHistoryStore),
+    (r'/Leaderboard/User-Match-History/data/(?:undefined)?(\d*)', UserMatchHistoryStore),
     
     (r'/Leaderboard/Match-History$', GeneralInfoHandler),
     (r'/Leaderboard/Match-History/(\d+)$', GeneralInfoHandler),

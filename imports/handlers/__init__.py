@@ -13,6 +13,6 @@ from FixedUserRequestHandler import FixedUserRequestHandler, AutoVerifiedRequest
 
 #data handlers
 from LeaderboardStore import LeaderboardStore
-from MatchHistoryStore import MatchHistoryStore
+from MatchHistoryStore import MatchHistoryStore, UserMatchHistoryStore
 from UserStore import UserStore
 from RankStore import RankStore

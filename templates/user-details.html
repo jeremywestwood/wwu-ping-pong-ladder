@@ -2,6 +2,70 @@
 
 {% block title %}Ping Pong Ladder User Details{% end %}
 
+{% block head %}
+<style>
+@import "//ajax.googleapis.com/ajax/libs/dojo/1.8/dojox/grid/resources/claroGrid.css";
+</style>
+
+<script src="/static/match_store.js"></script>
+<script>
+    require(["dojo/parser", 
+             "dojo/domReady!", 
+             "dojo/ready", 
+             "dojo/on",  
+             "dojo/_base/lang", 
+             "dijit/registry", 
+             "dijit/layout/BorderContainer", 
+             "dijit/layout/ContentPane", 
+             "dijit/form/Button", 
+             "dojox/grid/DataGrid",
+             "dojo/data/ObjectStore",
+             "dojo/store/JsonRest"], 
+    function(parser, domReady, ready, on, lang, registry, BorderContainer, ContentPane, Button, DataGrid, ObjectStore, JsonRest){
+        parser.parse();
+        
+        ready(function() {
+            //var matches_grid = registry.byId("matches_grid");
+            
+            on(matches_grid, "rowClick", function(evt) {
+                var item = matches_grid.getItem(evt.rowIndex);
+                document.location.href = '/Leaderboard/Match-History/' + item.id;
+            });
+            
+            function dateFormatter(date, rowIndex) {
+                var rowdata = this.grid.getItem(rowIndex);
+                var d = new Date(date*1000);
+                return d.toLocaleString();
+            }
+            
+            function opponentsFormatter(oid, rowIndex) {
+                var rowdata = this.grid.getItem(rowIndex);
+                return rowdata.winner_displayname + " VS " + rowdata.opponent_displayname;
+            }
+            
+            function outcomeFormatter(wscore, rowIndex) {
+                var rowdata = this.grid.getItem(rowIndex);
+                return rowdata.winner_score + ":" + rowdata.opponent_score;
+            }
+            
+            var structure = [
+                {name: 'Date', field: 'date', width: '25%', formatter: dateFormatter},
+                {name: 'Opponents (Victor first)', field: 'opponent_id', width: '60%', formatter: opponentsFormatter},
+                {name: 'Outcome', field: 'winner_score', width: '15%', formatter: outcomeFormatter}
+            ];
+            
+            matches_grid.set('escapeHTMLInData', false);
+            matches_grid.set('structure', structure);
+            var user_matches_store = new JsonRest({target: "/Leaderboard/User-Match-History/data/{{ target_user.id }}"});
+	    var userMatchStore = new ObjectStore({objectStore: user_matches_store});
+            matches_grid.setStore(userMatchStore);
+            matches_grid.startup();
+        });
+    });
+</script>
+
+{% end %}
+
 {% block body %}
 
 <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
@@ -15,7 +79,7 @@
         
         <br><br>
 
-        <div id="simplechart" style="width: 90%; height: 150px; margin: 5px auto 0px auto;"></div>
+        <div id="simplechart" style="width: 90% height: 150px; "></div>
 
         <script>
         var rankStore = null;
@@ -51,7 +115,19 @@
           });
         });
         </script>
+        <br><br>
         
+
+    <table data-dojo-id="matches_grid" data-dojo-type="dojox/grid/DataGrid" style="height: 100%">
+      <thead>
+        <tr>
+          <th field="date" width="20%">Date</th>
+          <th field="opponents" width="65%">Opponents (Victor first)</th>
+          <th field="outcome" width="15%">Outcome</th>
+        </tr>
+      </thead>
+    </table>
+
 </div>
 
 {% end %}

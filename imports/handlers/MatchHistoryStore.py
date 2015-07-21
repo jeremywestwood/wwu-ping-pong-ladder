@@ -4,7 +4,7 @@ import re
 
 from sqlalchemy.sql.expression import desc, asc, label
 import sqlalchemy.util._collections
-from sqlalchemy import func, and_
+from sqlalchemy import func, and_, or_
 
 from database.SessionFactory import SessionFactory
 
@@ -18,7 +18,7 @@ import constants
 
 from resultdict import resultdict
     
-def get_match_history_query(session):
+def get_match_history_query(session, filter_user_id=None):
 
     #(game_id, score)
 
@@ -60,13 +60,15 @@ def get_match_history_query(session):
                                        func.coalesce(game_losers.c.games_lost, 0).label("games_lost"),
                                        func.coalesce(game_winners.c.total_points, 0).label("points_won"),
                                        func.coalesce(game_losers.c.total_points, 0).label("points_lost"),
-                                     ).\
+                                     )
+    match_game_counts = match_game_counts.\
                               outerjoin(game_winners, 
                                 and_(game_winners.c.match_id == Participation.match_id, 
                                 game_winners.c.user_id == Participation.user_id) ).\
                               outerjoin(game_losers, 
                                 and_(game_losers.c.match_id == Participation.match_id, 
-                                game_losers.c.user_id == Participation.user_id) ).subquery()
+                                game_losers.c.user_id == Participation.user_id) ).\
+                              subquery()
                                 
     match_winners = session.query( match_game_counts.c.match_id, 
                                    match_game_counts.c.user_id, 
@@ -96,6 +98,8 @@ def get_match_history_query(session):
                                     match_losers.c.displayname.label('opponent_displayname')).\
                         filter( match_winners.c.match_id == match_losers.c.match_id ).\
                         filter( Match.id == match_winners.c.match_id )
+    if filter_user_id:
+        match_history = match_history.filter(or_(match_winners.c.user_id == filter_user_id, match_losers.c.user_id == filter_user_id))
     
     return match_history
 
@@ -129,8 +133,6 @@ class MatchHistoryStore(AutoVerifiedRequestHandler):
         
         if match_id is not None and match_id != "":
             # single item
-            user_id = int(match_id)
-            
             session = SessionFactory()
             try:
                 result = get_match_history_query(session).filter(Match.id == match_id).one()
@@ -196,4 +198,75 @@ class MatchHistoryStore(AutoVerifiedRequestHandler):
                 
             finally:
                 session.close()
+
+class UserMatchHistoryStore(AutoVerifiedRequestHandler):
+    def get(self, target_user_id):
+        username = self.get_current_user()
+        
+        if username is None:
+            self.validate_user()
+            return
+            
+        user = User.get_user(username)
+                
+        if user.permission_level < constants.PERMISSION_LEVEL_USER:
+            self.render("denied.html", user=user)
+            return
+        
+        
+        if not target_user_id:
+            raise ValueError("User required")
+        # query items
+        
+        raw_range = self.request.headers.get('Range', '')
+        m = range_expression.match(raw_range)
+
+        if m is not None:
+            start = int(m.group('lower'))
+            stop = int(m.group('upper')) + 1
+        else:
+            start = 0
+            stop = -1
+
+        raw_query = self.request.query
+        m = sorting_expression.match(raw_query)
+        
+        if m is not None:
+                direction = m.group('direction')
+                column = m.group('column')
+        else:
+                direction = '-'
+                column = "date"
+                
+        if column not in ["id", "date", "winner_id", "winner_score", "winner_displayname", "opponent_id", "opponent_score", "opponent_displayname"]:
+            column = "date"
+
+        if direction == '-':
+                direction = desc
+        else:
+                direction = asc
+        
+        session = SessionFactory()
+        try:
+            query = get_match_history_query(session, target_user_id)
+                    
+            query = query.order_by(direction(column))
+                    
+            #query = query.slice(start, stop)
+                    
+            result = query.all()
+                    
+            result = resultdict(result)
+            
+            total = len(result)
+        
+            data = "{}&& "+json.dumps(result)
+            self.set_header('Content-range', 'items {}-{}/{}'.format(start, stop, total))
+            self.set_header('Content-length', len(data))
+            self.set_header('Content-type', 'application/json')
+            self.write(data)
+            
+        finally:
+            session.close()
+
 
