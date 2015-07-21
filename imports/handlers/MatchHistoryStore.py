@@ -25,45 +25,73 @@ def get_match_history_query(session):
     winning_scores = session.query( Score.game_id, func.max(Score.score).label("score") ).\
                                 group_by( Score.game_id ).subquery()
                             
+    #(game_id, score)
+
+    losing_scores = session.query( Score.game_id, func.min(Score.score).label("score") ).\
+                               group_by( Score.game_id ).subquery()
+                            
     #(match_id, user_id, games_won)
                             
     game_winners = session.query(   Game.match_id,
                                     Score.user_id, 
-                                    func.count(winning_scores.c.game_id).label("games_won") ).\
+                                    func.count(winning_scores.c.game_id).label("games_won"),
+                                    func.max(winning_scores.c.score).label("total_points"), ).\
                               filter(   Game.id == Score.game_id ).\
                               filter(   winning_scores.c.game_id == Score.game_id ).\
                               filter(   Score.score == winning_scores.c.score ).\
                               group_by(Game.match_id, Score.user_id).subquery()
 
     #(match_id, user_id, games_won)
+                            
+    game_losers = session.query(   Game.match_id,
+                                   Score.user_id, 
+                                   func.count(losing_scores.c.game_id).label("games_lost"),
+                                   func.max(losing_scores.c.score).label("total_points"), ).\
+                             filter(   Game.id == Score.game_id ).\
+                             filter(   losing_scores.c.game_id == Score.game_id ).\
+                             filter(   Score.score == losing_scores.c.score ).\
+                             group_by(Game.match_id, Score.user_id).subquery()
+
+    #(match_id, user_id, games_won)
     
     match_game_counts = session.query( Participation.match_id,
                                        Participation.user_id,
-                                       func.coalesce(game_winners.c.games_won, 0).label("games_won") ).\
+                                       func.coalesce(game_winners.c.games_won, 0).label("games_won"),
+                                       func.coalesce(game_losers.c.games_lost, 0).label("games_lost"),
+                                       func.coalesce(game_winners.c.total_points, 0).label("points_won"),
+                                       func.coalesce(game_losers.c.total_points, 0).label("points_lost"),
+                                     ).\
                               outerjoin(game_winners, 
                                 and_(game_winners.c.match_id == Participation.match_id, 
-                                game_winners.c.user_id == Participation.user_id) ).subquery()
+                                game_winners.c.user_id == Participation.user_id) ).\
+                              outerjoin(game_losers, 
+                                and_(game_losers.c.match_id == Participation.match_id, 
+                                game_losers.c.user_id == Participation.user_id) ).subquery()
                                 
     match_winners = session.query( match_game_counts.c.match_id, 
                                    match_game_counts.c.user_id, 
                                    User.displayname, 
-                                   match_game_counts.c.games_won.label("games_won") ).\
+                                   match_game_counts.c.games_won.label("games_won"),
+                                   match_game_counts.c.points_won.label("total_points"),
+                                 ).\
                 filter( match_game_counts.c.user_id == User.id ).\
                 filter( match_game_counts.c.games_won >= 1 ).subquery()
                 
     match_losers = session.query(  match_game_counts.c.match_id, 
                                    match_game_counts.c.user_id, 
                                    User.displayname, 
-                                   match_game_counts.c.games_won.label("games_won") ).\
+                                   match_game_counts.c.games_lost.label("games_lost"),
+                                   match_game_counts.c.points_lost.label("total_points"),
+                                ).\
                 filter( match_game_counts.c.user_id == User.id ).\
                 filter( match_game_counts.c.games_won < 1 ).subquery()
                               
     match_history = session.query(  Match.id.label('id'),
                                     Match.date.label('date'),
-                                    match_winners.c.games_won.label('winner_score'), 
+                                    match_winners.c.total_points.label('winner_score'), 
                                     match_winners.c.user_id.label('winner_id'),
                                     match_winners.c.displayname.label('winner_displayname'),
-                                    match_losers.c.games_won.label('opponent_score'),
+                                    match_losers.c.total_points.label('opponent_score'),
                                     match_losers.c.user_id.label('opponent_id'),
                                     match_losers.c.displayname.label('opponent_displayname')).\
                         filter( match_winners.c.match_id == match_losers.c.match_id ).\
