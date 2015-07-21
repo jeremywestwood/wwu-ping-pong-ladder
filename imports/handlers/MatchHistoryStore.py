@@ -49,14 +49,14 @@ def get_match_history_query(session):
                                    User.displayname, 
                                    match_game_counts.c.games_won.label("games_won") ).\
                 filter( match_game_counts.c.user_id == User.id ).\
-                filter( match_game_counts.c.games_won >= 2 ).subquery()
+                filter( match_game_counts.c.games_won >= 1 ).subquery()
                 
     match_losers = session.query(  match_game_counts.c.match_id, 
                                    match_game_counts.c.user_id, 
                                    User.displayname, 
                                    match_game_counts.c.games_won.label("games_won") ).\
                 filter( match_game_counts.c.user_id == User.id ).\
-                filter( match_game_counts.c.games_won < 2 ).subquery()
+                filter( match_game_counts.c.games_won < 1 ).subquery()
                               
     match_history = session.query(  Match.id.label('id'),
                                     Match.date.label('date'),
