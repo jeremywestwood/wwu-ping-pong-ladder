@@ -1,4 +1,4 @@
-from CASVerifiedRequestHandler import CASVerifiedRequestHandler
+from FixedUserRequestHandler import AutoVerifiedRequestHandler
 import json
 import re
 
@@ -26,7 +26,7 @@ def get_rankstore_query(session, user_id):
 sorting_expression = re.compile(r"sort\((?P<direction>[\+|\-])(?P<column>\w+)\)")
 range_expression = re.compile(r"items=(?P<lower>\d+)-(?P<upper>\d+)")
 
-class RankStore(CASVerifiedRequestHandler):
+class RankStore(AutoVerifiedRequestHandler):
     def get(self, user_id, timestamp):
         user_id = int(user_id)
         username = self.get_current_user()

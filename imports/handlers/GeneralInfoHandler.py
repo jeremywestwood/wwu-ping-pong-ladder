@@ -1,4 +1,4 @@
-from CASVerifiedRequestHandler import CASVerifiedRequestHandler
+from FixedUserRequestHandler import AutoVerifiedRequestHandler
 
 import constants
 
@@ -9,7 +9,7 @@ from database.SessionFactory import SessionFactory
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm.exc import MultipleResultsFound
 
-class GeneralInfoHandler(CASVerifiedRequestHandler):
+class GeneralInfoHandler(AutoVerifiedRequestHandler):
     def get(self, mid=None):
         username = self.get_current_user()
         

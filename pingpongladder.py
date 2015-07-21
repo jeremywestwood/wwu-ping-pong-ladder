@@ -18,7 +18,7 @@ import constants
 from handlers import *
 
 handlers = [
-    #(r'/fake_user/(.*)$', FakeUserRequestHandler),
+    (r'/', FixedUserRequestHandler),
     (r'/(logout|admin|login)$', MainRequestHandler),
     
     (r"/", tornado.web.RedirectHandler, {"url": "/Leaderboard"}),

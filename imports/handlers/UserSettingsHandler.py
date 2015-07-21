@@ -1,4 +1,4 @@
-from CASVerifiedRequestHandler import CASVerifiedRequestHandler
+from FixedUserRequestHandler import AutoVerifiedRequestHandler
 
 import constants
 
@@ -9,7 +9,7 @@ import json
 
 from strip_tags import strip_tags
 
-class UserSettingsHandler(CASVerifiedRequestHandler):
+class UserSettingsHandler(AutoVerifiedRequestHandler):
     def result(self, outcome, message, user=None):
         data = {'type': outcome, 'msg': message}
         if user is not None:

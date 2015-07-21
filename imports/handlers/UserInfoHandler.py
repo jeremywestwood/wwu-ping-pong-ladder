@@ -1,10 +1,10 @@
-from CASVerifiedRequestHandler import CASVerifiedRequestHandler
+from FixedUserRequestHandler import AutoVerifiedRequestHandler
 
 import constants
 
 from database.User import User
 
-class UserInfoHandler(CASVerifiedRequestHandler):
+class UserInfoHandler(AutoVerifiedRequestHandler):
     def get(self, uid=None):
         username = self.get_current_user()
         

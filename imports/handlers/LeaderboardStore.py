@@ -1,4 +1,4 @@
-from CASVerifiedRequestHandler import CASVerifiedRequestHandler
+from FixedUserRequestHandler import AutoVerifiedRequestHandler
 import json
 import re
 
@@ -65,7 +65,7 @@ quit()
 sorting_expression = re.compile(r"sort\((?P<direction>[\+|\-])(?P<column>\w+)\)")
 range_expression = re.compile(r"items=(?P<lower>\d+)-(?P<upper>\d+)")
 
-class LeaderboardStore(CASVerifiedRequestHandler):
+class LeaderboardStore(AutoVerifiedRequestHandler):
     def get(self, user_id):
         username = self.get_current_user()
         

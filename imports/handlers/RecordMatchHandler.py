@@ -1,4 +1,4 @@
-from CASVerifiedRequestHandler import CASVerifiedRequestHandler
+from FixedUserRequestHandler import AutoVerifiedRequestHandler
 
 import constants
 
@@ -9,7 +9,7 @@ from database.SessionFactory import SessionFactory
 import datetime
 import json
 
-class RecordMatchHandler(CASVerifiedRequestHandler):
+class RecordMatchHandler(AutoVerifiedRequestHandler):
     def result(self, outcome, message):
         data = json.dumps({'type': outcome, 'msg': message})
         self.finish(data)

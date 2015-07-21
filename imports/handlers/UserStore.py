@@ -1,4 +1,4 @@
-from CASVerifiedRequestHandler import CASVerifiedRequestHandler
+from FixedUserRequestHandler import AutoVerifiedRequestHandler
 import json
 import re
 
@@ -19,7 +19,7 @@ def get_leaderboard_query(session):
 sorting_expression = re.compile(r"sort\((?P<direction>[\+|\-])(?P<column>\w+)\)")
 range_expression = re.compile(r"items=(?P<lower>\d+)-(?P<upper>\d+)")
 
-class UserStore(CASVerifiedRequestHandler):
+class UserStore(AutoVerifiedRequestHandler):
     def get(self, user_id):
         username = self.get_current_user()
         

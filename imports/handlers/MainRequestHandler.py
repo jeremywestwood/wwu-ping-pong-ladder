@@ -1,10 +1,10 @@
-from CASVerifiedRequestHandler import CASVerifiedRequestHandler
+from FixedUserRequestHandler import AutoVerifiedRequestHandler
 
 import constants
 
 from database.User import User
 
-class MainRequestHandler(CASVerifiedRequestHandler):
+class MainRequestHandler(AutoVerifiedRequestHandler):
     def get(self, action):
         if action == "logout":
             self.logout_user()

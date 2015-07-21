@@ -7,6 +7,7 @@ from RecordMatchHandler import RecordMatchHandler
 from UserSettingsHandler import UserSettingsHandler
 
 from FakeUserRequestHandler import FakeUserRequestHandler
+from FixedUserRequestHandler import FixedUserRequestHandler, AutoVerifiedRequestHandler
 
 #data handlers
 from LeaderboardStore import LeaderboardStore
