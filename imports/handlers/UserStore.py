@@ -92,6 +92,8 @@ class UserStore(AutoVerifiedRequestHandler):
                         val = val[0].replace('*', '%')
                         query = query.filter(filterable_columns[col].like(val))
                         
+                total = query.count()
+            
                 query = query.order_by(direction(column))
                         
                 query = query.slice(start, stop)
@@ -100,8 +102,6 @@ class UserStore(AutoVerifiedRequestHandler):
                         
                 result = resultdict(result)
                 
-                total = len(result)
-            
                 data = "{}&& "+json.dumps(result)
                 self.set_header('Content-range', 'items {}-{}/{}'.format(start, stop, total))
                 self.set_header('Content-length', len(data))

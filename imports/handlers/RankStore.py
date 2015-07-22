@@ -93,6 +93,8 @@ class RankStore(AutoVerifiedRequestHandler):
             try:
                 query = get_rankstore_query(session, user_id)
                         
+                total = query.count()
+            
                 query = query.order_by(direction(column))
                         
                 query = query.slice(start, stop)
@@ -101,8 +103,6 @@ class RankStore(AutoVerifiedRequestHandler):
                         
                 result = resultdict(result)
                 
-                total = len(result)
-            
                 data = "{}&& "+json.dumps(result)
                 self.set_header('Content-range', 'items {}-{}/{}'.format(start, stop, total))
                 self.set_header('Content-length', len(data))
