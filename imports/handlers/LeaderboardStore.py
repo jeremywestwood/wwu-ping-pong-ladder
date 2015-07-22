@@ -131,6 +131,8 @@ class LeaderboardStore(AutoVerifiedRequestHandler):
             try:
                 query = get_leaderboard_query(session)
                         
+                total = query.count()
+            
                 query = query.order_by(direction(column))
                         
                 query = query.slice(start, stop)
@@ -139,8 +141,6 @@ class LeaderboardStore(AutoVerifiedRequestHandler):
                         
                 result = resultdict(result)
                 
-                total = len(result)
-            
                 data = "{}&& "+json.dumps(result)
                 self.set_header('Content-range', 'items {}-{}/{}'.format(start, stop, total))
                 self.set_header('Content-length', len(data))

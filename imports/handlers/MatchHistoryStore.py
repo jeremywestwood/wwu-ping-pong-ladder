@@ -180,16 +180,16 @@ class MatchHistoryStore(AutoVerifiedRequestHandler):
             try:
                 query = get_match_history_query(session)
                         
+                total = query.count()
+            
                 query = query.order_by(direction(column))
                         
-                #query = query.slice(start, stop)
+                query = query.slice(start, stop)
                         
                 result = query.all()
                         
                 result = resultdict(result)
                 
-                total = len(result)
-            
                 data = "{}&& "+json.dumps(result)
                 self.set_header('Content-range', 'items {}-{}/{}'.format(start, stop, total))
                 self.set_header('Content-length', len(data))
@@ -250,16 +250,16 @@ class UserMatchHistoryStore(AutoVerifiedRequestHandler):
         try:
             query = get_match_history_query(session, target_user_id)
                     
+            total = query.count()
+        
             query = query.order_by(direction(column))
                     
-            #query = query.slice(start, stop)
+            query = query.slice(start, stop)
                     
             result = query.all()
                     
             result = resultdict(result)
             
-            total = len(result)
-        
             data = "{}&& "+json.dumps(result)
             self.set_header('Content-range', 'items {}-{}/{}'.format(start, stop, total))
             self.set_header('Content-length', len(data))
