@@ -33,22 +33,30 @@ def get_leaderboard_query(session):
                                          most_recent_match_date.c.date.label("date") ).\
                             filter( most_recent_match_date.c.user_id == participation_matches.c.user_id ).\
                             filter( most_recent_match_date.c.date == participation_matches.c.date ).subquery()
-                            
+
     game_count = session.query( User.id.label("user_id"), 
                                 func.count(Score.id).label("games") ).\
                             outerjoin( Score ).\
                             group_by( User.id ).subquery()
-                            
+
+    game_winners = session.query(func.max(Score.score),Score.game_id.label('game_id'),
+                                 Score.user_id.label('user_id')).group_by(Score.game_id).subquery()
+
+    game_win_count = session.query( func.count(game_winners.c.game_id).label('wins'),
+                                    game_winners.c.user_id.label("user_id") ).group_by(game_winners.c.user_id).subquery()
+
     most_recent_ratings = session.query( User.id.label("id"),
                                          User.displayname.label("displayname"),
                                          game_count.c.games.label("games"),
-                                         TrueSkillCache.exposure.label("rating") ).\
+                                         TrueSkillCache.exposure.label("rating"),
+                                         game_win_count.c.wins.label('wins'),
+                                         (100*game_win_count.c.wins/game_count.c.games).label("win_percentage")).\
                             filter( User.id == game_count.c.user_id ).\
+                            filter( User.id == game_win_count.c.user_id ).\
                             filter( User.id == most_recent_matches.c.user_id ).\
                             filter( User.id == TrueSkillCache.user_id ).\
                             filter( most_recent_matches.c.match_id == TrueSkillCache.match_id )
-    
-    
+
     return most_recent_ratings
 """
 session = SessionFactory()
