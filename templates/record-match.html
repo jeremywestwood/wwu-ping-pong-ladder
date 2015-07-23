@@ -38,8 +38,6 @@ function(parser, domReady, ready, FilteringSelect, BorderContainer, ContentPane,
         var form = registry.byId("record_match_form");
         var userSelect1 = registry.byId("userSelect1");
         var userSelect2 = registry.byId("userSelect2");
-        var date_input = registry.byId("date");
-        var time_input = registry.byId("time");
         
         function validateOpponents(value, constraints) {
             return (userSelect1.value != userSelect2.value);
@@ -69,12 +67,10 @@ function(parser, domReady, ready, FilteringSelect, BorderContainer, ContentPane,
                         form.reset();
                         userSelect1.value = {{ user.id }};
                         userSelect2.set('value', -1);
-                        date_input.set('value', new Date());
-                        time_input.set('value', new Date());
                         
                         record_match_button.set('disabled', false);
                     }
-                    
+
                     message.innerHTML = response.msg;
                     
                     messageBar.style.background = color;
@@ -83,7 +79,7 @@ function(parser, domReady, ready, FilteringSelect, BorderContainer, ContentPane,
                     
                     setTimeout(function() {
                         fx.fadeOut({ node: messageBar, duration: 1000 }).play();
-                    }, 4000);
+                    }, 10000);
                     
                 });
                 
@@ -120,8 +116,6 @@ function(parser, domReady, ready, FilteringSelect, BorderContainer, ContentPane,
             <br>
             Choose when the match took place.
             <br>
-            <input type="text" name="date" id="date" value="now" data-dojo-type="dijit/form/DateTextBox" required="true" />
-            <input type="text" name="time" id="time" value="now" data-dojo-type="dijit/form/TimeTextBox" required="true" />
             <br><br><br>
             <fieldset id="game_input">
                 <legend>Games:</legend>

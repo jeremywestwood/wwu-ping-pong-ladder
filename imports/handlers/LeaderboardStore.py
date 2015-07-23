@@ -127,7 +127,7 @@ class LeaderboardStore(AutoVerifiedRequestHandler):
                     direction = '-'
                     column = "rating"
                     
-            if column not in ["id", "displayname", "games", "rating"]:
+            if column not in ["id", "displayname", "games", "wins", "win_percentage", "rating"]:
                 column = "rating"
 
             if direction == '-':

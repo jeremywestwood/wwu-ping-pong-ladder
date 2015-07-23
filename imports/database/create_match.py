@@ -33,9 +33,10 @@ def get_most_recent_ratings(user_id):
         most_recent_match = session.query( participation_matches.c.match_id.label("match_id") ).\
                                 filter( participation_matches.c.date == most_recent_match_date.c.date ).\
                                 subquery()
-                                
+
         most_recent_ratings = session.query( TrueSkillCache.sigma.label("sigma"),
-                                             TrueSkillCache.mu.label("mu") ).\
+                                             TrueSkillCache.mu.label("mu"),
+                                            TrueSkillCache.exposure.label("exposure")).\
                                 filter( TrueSkillCache.user_id == user_id ).\
                                 filter( most_recent_match.c.match_id == TrueSkillCache.match_id ).one()
         
@@ -62,6 +63,8 @@ def create_match(session, user1, user2, timestamp, games):
     
     u1ratings = get_most_recent_ratings(user1.id)
     u2ratings = get_most_recent_ratings(user2.id)
+    u1ratings.pop('exposure')
+    u2ratings.pop('exposure')
     
     p1rating = trueskill.Rating(**u1ratings)
     p2rating = trueskill.Rating(**u2ratings)
