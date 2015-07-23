@@ -40,7 +40,8 @@
             }
             
             var structure = [
-                {name: 'Name', field: 'displayname', width: '40%'},
+                {name: '#', field: 'order', width: '5%'},
+                {name: 'Name', field: 'displayname', width: '35%'},
                 {name: 'Games', field: 'games', width: '10%'},
                 {name: 'Wins', field: 'wins', width: '10%'},
                 {name: 'Win Percentage', field: 'win_percentage', width: '10%'},
@@ -60,7 +61,8 @@
 <table data-dojo-id="leaderboard_grid" data-dojo-type="dojox/grid/DataGrid" data-dojo-props="region:'center'">
   <thead>
     <tr>
-      <th field="displayname" width="40%">Name</th>
+      <th field="order" width="5%">#</th>
+      <th field="displayname" width="35%">Name</th>
       <th field="games" width="10%">Games</th>
         <th field="wins" width="10%">Wins</th>
         <th field="win_percentage" width="10%">Win Percentage</th>

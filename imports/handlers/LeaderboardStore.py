@@ -146,9 +146,11 @@ class LeaderboardStore(AutoVerifiedRequestHandler):
                 query = query.slice(start, stop)
                         
                 result = query.all()
-                        
+
                 result = resultdict(result)
-                
+
+                for i,res in enumerate(result,1):
+                    res['order']= i
                 data = "{}&& "+json.dumps(result)
                 self.set_header('Content-range', 'items {}-{}/{}'.format(start, stop, total))
                 self.set_header('Content-length', len(data))
