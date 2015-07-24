@@ -42,7 +42,7 @@ def get_most_recent_ratings(user_id):
         
         return resultdict(most_recent_ratings)
     except NoResultFound:
-        return {'mu': trueskill.MU, 'sigma': trueskill.SIGMA}
+        return {'mu': trueskill.MU, 'sigma': trueskill.SIGMA, 'exposure': 0}
     finally:
         session.close()
 
