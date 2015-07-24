@@ -49,10 +49,10 @@ def get_leaderboard_query(session):
                                          User.displayname.label("displayname"),
                                          game_count.c.games.label("games"),
                                          TrueSkillCache.exposure.label("rating"),
-                                         game_win_count.c.wins.label('wins'),
-                                         (100*game_win_count.c.wins/game_count.c.games).label("win_percentage")).\
+                                         func.coalesce(game_win_count.c.wins,0).label('wins'),
+                                         (func.coalesce(100*game_win_count.c.wins/game_count.c.games,0)).label("win_percentage")).\
+                                                 outerjoin(game_win_count, User.id == game_win_count.c.user_id ).\
                             filter( User.id == game_count.c.user_id ).\
-                            filter( User.id == game_win_count.c.user_id ).\
                             filter( User.id == most_recent_matches.c.user_id ).\
                             filter( User.id == TrueSkillCache.user_id ).\
                             filter( most_recent_matches.c.match_id == TrueSkillCache.match_id )
