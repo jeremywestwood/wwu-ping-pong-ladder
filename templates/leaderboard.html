@@ -38,14 +38,19 @@
             function ratingFormatter(rating, rowIndex) {
                 return rating.toFixed(3);
             }
+
+            function percentageFormatter(num, rowIndex){
+                return num + ' %'
+            }
             
             var structure = [
                 {name: '#', field: 'order', width: '5%'},
-                {name: 'Name', field: 'displayname', width: '35%'},
+                {name: 'Name', field: 'displayname', width: '25%'},
                 {name: 'Games', field: 'games', width: '10%'},
                 {name: 'Wins', field: 'wins', width: '10%'},
-                {name: 'Win Percentage', field: 'win_percentage', width: '10%'},
-                {name: 'Rating', field: 'rating', width: '20%', formatter: ratingFormatter}
+                {name: 'Win Percentage', field: 'win_percentage', width: '10%', formatter: percentageFormatter},
+                {name: 'Rating', field: 'rating', width: '20%', formatter: ratingFormatter},
+                {name: 'Form', field: 'form', width: '10%'}
             ];
             
             leaderboard_grid.set('escapeHTMLInData', false);
@@ -62,11 +67,12 @@
   <thead>
     <tr>
       <th field="order" width="5%">#</th>
-      <th field="displayname" width="35%">Name</th>
+      <th field="displayname" width="25%">Name</th>
       <th field="games" width="10%">Games</th>
         <th field="wins" width="10%">Wins</th>
         <th field="win_percentage" width="10%">Win Percentage</th>
       <th field="rating" width="20%">Rating</th>
+        <th field="form" width="10%">Form</th>
     </tr>
   </thead>
 </table>

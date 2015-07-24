@@ -1,3 +1,4 @@
+from sqlalchemy.orm import aliased
 from FixedUserRequestHandler import AutoVerifiedRequestHandler
 import json
 import re
@@ -151,6 +152,15 @@ class LeaderboardStore(AutoVerifiedRequestHandler):
 
                 for i,res in enumerate(result,1):
                     res['order']= i
+                    s1 = aliased(Score)
+                    last_5_games = session.query(Score.score.label('player_score'), Score.game_id, s1.score.label('opponent_score') ).\
+                        join(s1, sqlalchemy.and_(s1.game_id==Score.game_id, s1.user_id!=Score.user_id)).filter(Score.user_id==res['id']).\
+                        order_by(Score.game_id.desc()).slice(0,5)
+                    res['form'] = ''
+                    for game in last_5_games:
+                        win_loss = 'W' if game.player_score>game.opponent_score else 'L'
+                        res['form'] = win_loss + res['form']
+
                 data = "{}&& "+json.dumps(result)
                 self.set_header('Content-range', 'items {}-{}/{}'.format(start, stop, total))
                 self.set_header('Content-length', len(data))
