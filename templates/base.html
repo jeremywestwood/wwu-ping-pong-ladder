@@ -34,19 +34,15 @@
 	<body class="claro">
         
 		<div data-dojo-type="dijit/layout/BorderContainer" style="width: 100%; height: 100%">
-		
-	        <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'"><p style="display: inline; font-size: 25px;">{% block title %}Ping Pong Ladder{% end %}</p></div>
 	        
             <div data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="region:'center'" style="width: 100%; height: 100%">
-            
-                <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'">{% block login_status %}{% include login_status.html %}{% end %}</div>
-		    
+
+                {% block action_bar %}
+                    <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'">Action bar</div>
+                {% end %}
+
 		        {% block body %}
                     <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">Body pane</div>
-                {% end %}
-                
-                {% block action_bar %}
-                    <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom'">Action bar</div>
                 {% end %}
                 
 		    </div>

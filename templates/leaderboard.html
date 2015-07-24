@@ -62,6 +62,16 @@
 </script>
 {% end %}
 
+{% block action_bar %}
+<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'">
+    <center>
+        <button data-dojo-type="dijit/form/Button" onClick="document.location.href = '/Leaderboard/Record-Match';" data-dojo-props="iconClass:'icon icon_record'" type="button">Record Match</button>
+        <button data-dojo-type="dijit/form/Button" onClick="document.location.href = '/Leaderboard/Match-History';" data-dojo-props="iconClass:'icon icon_history'" type="button">Match History</button>
+        <button data-dojo-type="dijit/form/Button" onClick="document.location.href = '/Leaderboard/User-Settings';" data-dojo-props="iconClass:'icon icon_settings'" type="button">Settings</button>
+    </center>
+</div>
+{% end %}
+
 {% block body %}
 <table data-dojo-id="leaderboard_grid" data-dojo-type="dojox/grid/DataGrid" data-dojo-props="region:'center'">
   <thead>
@@ -78,15 +88,7 @@
 </table>
 {% end %}
 
-{% block action_bar %}
-<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom'">
-    <center>
-        <button data-dojo-type="dijit/form/Button" onClick="document.location.href = '/Leaderboard/Record-Match';" data-dojo-props="iconClass:'icon icon_record'" type="button">Record Match</button>
-        <button data-dojo-type="dijit/form/Button" onClick="document.location.href = '/Leaderboard/Match-History';" data-dojo-props="iconClass:'icon icon_history'" type="button">Match History</button>
-        <button data-dojo-type="dijit/form/Button" onClick="document.location.href = '/Leaderboard/User-Settings';" data-dojo-props="iconClass:'icon icon_settings'" type="button">Settings</button>
-    </center>
-</div>
-{% end %}
+
 
 {% block cookie_crumb_bar %}
 <a href="/Leaderboard">Leaderboard</a>

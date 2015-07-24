@@ -80,6 +80,15 @@ function(parser, domReady, ready, registry, BorderContainer, ContentPane, Button
 
 {% end %}
 
+{% block action_bar %}
+<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'">
+    <center>
+        <button id="save_user_settings" data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'icon icon_save'" type="button">Save</button>
+        <button data-dojo-type="dijit/form/Button" onClick="document.location.href = '/Leaderboard';" data-dojo-props="iconClass:'icon icon_cancel'" type="button">Cancel</button>
+    </center>
+</div>
+{% end %}
+
 {% block body %}
 
 <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
@@ -115,15 +124,6 @@ function(parser, domReady, ready, registry, BorderContainer, ContentPane, Button
     </form>
 </div>
 
-{% end %}
-
-{% block action_bar %}
-<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom'">
-    <center>
-        <button id="save_user_settings" data-dojo-type="dijit/form/Button" data-dojo-props="iconClass:'icon icon_save'" type="button">Save</button>
-        <button data-dojo-type="dijit/form/Button" onClick="document.location.href = '/Leaderboard';" data-dojo-props="iconClass:'icon icon_cancel'" type="button">Cancel</button>
-    </center>
-</div>
 {% end %}
 
 {% block cookie_crumb_bar %}
