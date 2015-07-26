@@ -49,8 +49,9 @@
                 {name: 'Games', field: 'games', width: '10%'},
                 {name: 'Wins', field: 'wins', width: '10%'},
                 {name: 'Win Percentage', field: 'win_percentage', width: '10%', formatter: percentageFormatter},
-                {name: 'Rating', field: 'rating', width: '20%', formatter: ratingFormatter},
-                {name: 'Form', field: 'form', width: '10%'}
+                {name: 'Rating', field: 'rating', width: '15%', formatter: ratingFormatter},
+                {name: 'Form', field: 'form', width: '10%'},
+                {name: 'Streak', field: 'streak', width: '5%'}
             ];
             
             leaderboard_grid.set('escapeHTMLInData', false);
@@ -81,8 +82,9 @@
       <th field="games" width="10%">Games</th>
         <th field="wins" width="10%">Wins</th>
         <th field="win_percentage" width="10%">Win Percentage</th>
-      <th field="rating" width="20%">Rating</th>
+      <th field="rating" width="15%">Rating</th>
         <th field="form" width="10%">Form</th>
+        <th field="streak" width="5%">Streak</th>
     </tr>
   </thead>
 </table>

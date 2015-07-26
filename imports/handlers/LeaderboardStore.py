@@ -153,13 +153,15 @@ class LeaderboardStore(AutoVerifiedRequestHandler):
                 for i,res in enumerate(result,1):
                     res['order']= i
                     s1 = aliased(Score)
-                    last_5_games = session.query(Score.score.label('player_score'), Score.game_id, s1.score.label('opponent_score') ).\
+                    game_history = session.query(Score.score.label('player_score'), Score.game_id, s1.score.label('opponent_score') ).\
                         join(s1, sqlalchemy.and_(s1.game_id==Score.game_id, s1.user_id!=Score.user_id)).filter(Score.user_id==res['id']).\
-                        order_by(Score.game_id.desc()).slice(0,5)
+                        order_by(Score.game_id.desc())
                     res['form'] = ''
-                    for game in last_5_games:
-                        win_loss = 'W' if game.player_score>game.opponent_score else 'L'
-                        res['form'] = win_loss + res['form']
+                    game_history = ['W' if game.player_score>game.opponent_score else 'L' for game in game_history]
+                    last_game = game_history[0]
+                    opposite = 'W' if last_game == 'L' else 'L'
+                    res['form'] = ''.join(reversed(game_history[0:5]))
+                    res['streak'] = '%s%s' % (last_game, game_history.index(opposite) if  opposite in game_history else len(game_history))
 
                 data = "{}&& "+json.dumps(result)
                 self.set_header('Content-range', 'items {}-{}/{}'.format(start, stop, total))
