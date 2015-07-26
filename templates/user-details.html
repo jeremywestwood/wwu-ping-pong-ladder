@@ -116,9 +116,18 @@
         });
         </script>
         <br><br>
-        
+
 
     <table data-dojo-id="matches_grid" data-dojo-type="dojox/grid/DataGrid" style="height: 100%">
+        <script type="dojo/method" data-dojo-event="onStyleRow" data-dojo-args="row">
+            var item = this.getItem(row.index);
+            if(item){
+                var winner = this.store.getValue(item, "winner_id", null);
+                if(winner == {{ target_user.id }}){
+                    row.customStyles += "color:green;";
+                }
+            }
+        </script>
       <thead>
         <tr>
           <th field="date" width="20%">Date</th>
