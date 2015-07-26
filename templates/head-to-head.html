@@ -69,7 +69,7 @@ function(parser, domReady, ready, FilteringSelect, BorderContainer, ContentPane,
 
         function opponentsFormatter(oid, rowIndex) {
             var rowdata = this.grid.getItem(rowIndex);
-            return rowdata.winner_displayname + " VS " + rowdata.opponent_displayname;
+            return rowdata.winner_displayname
         }
 
         function outcomeFormatter(wscore, rowIndex) {
@@ -87,15 +87,16 @@ function(parser, domReady, ready, FilteringSelect, BorderContainer, ContentPane,
 
             matchStore = ObjectStore({objectStore: match_store});
 
-            var structure = [
-                {name: 'Date', field: 'date', width: '25%', formatter: dateFormatter},
-                {name: 'Opponents (Victor first)', field: 'opponent_id', width: '60%', formatter: opponentsFormatter},
-                {name: 'Outcome', field: 'winner_score', width: '15%', formatter: outcomeFormatter}
-            ];
-            head_to_head_grid.set('structure', structure);
+
             head_to_head_grid.setStore(matchStore);
-            head_to_head_grid.startup();
         }
+        var structure = [
+            {name: 'Date', field: 'date', width: '25%', formatter: dateFormatter},
+            {name: 'Victor', field: 'opponent_id', width: '60%', formatter: opponentsFormatter},
+            {name: 'Outcome', field: 'winner_score', width: '15%', formatter: outcomeFormatter}
+        ];
+        head_to_head_grid.set('structure', structure);
+        head_to_head_grid.startup();
     });
 });
 
@@ -127,7 +128,7 @@ function(parser, domReady, ready, FilteringSelect, BorderContainer, ContentPane,
   <thead>
     <tr>
       <th field="date" width="20%">Date</th>
-      <th field="opponents" width="65%">Opponents (Victor first)</th>
+      <th field="opponents" width="65%">Victor</th>
       <th field="outcome" width="15%">Outcome</th>
     </tr>
   </thead>
