@@ -7,12 +7,13 @@ from UserInfoHandler import UserInfoHandler
 from AddUserHandler import AddUserHandler
 from RecordMatchHandler import RecordMatchHandler
 from UserSettingsHandler import UserSettingsHandler
+from HeadToHeadHandler import HeadToHeadHandler
 
 from FakeUserRequestHandler import FakeUserRequestHandler
 from FixedUserRequestHandler import FixedUserRequestHandler, AutoVerifiedRequestHandler
 
 #data handlers
 from LeaderboardStore import LeaderboardStore
-from MatchHistoryStore import MatchHistoryStore, UserMatchHistoryStore
+from MatchHistoryStore import MatchHistoryStore, UserMatchHistoryStore, HeadToHeadStore
 from UserStore import UserStore
 from RankStore import RankStore

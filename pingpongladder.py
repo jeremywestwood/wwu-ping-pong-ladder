@@ -41,6 +41,9 @@ handlers = [
     
     (r'/Leaderboard/Record-Match$', RecordMatchHandler),
     (r'/Leaderboard/User-Settings$', UserSettingsHandler),
+
+    (r'/Leaderboard/Head-to-Head$', HeadToHeadHandler),
+    (r'/Leaderboard/Head-to-Head/(\d+)/(\d+)$', HeadToHeadStore),
 ]
 
 if __name__ == "__main__":

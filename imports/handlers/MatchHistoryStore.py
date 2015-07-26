@@ -99,7 +99,12 @@ def get_match_history_query(session, filter_user_id=None):
                         filter( match_winners.c.match_id == match_losers.c.match_id ).\
                         filter( Match.id == match_winners.c.match_id )
     if filter_user_id:
-        match_history = match_history.filter(or_(match_winners.c.user_id == filter_user_id, match_losers.c.user_id == filter_user_id))
+        if filter_user_id and isinstance(filter_user_id, list):
+            match_history = match_history.filter(or_(and_(match_winners.c.user_id==filter_user_id[0], match_losers.c.user_id==filter_user_id[1]),
+                                                     and_(match_winners.c.user_id==filter_user_id[1], match_losers.c.user_id==filter_user_id[0])
+                                                     ))
+        else:
+            match_history = match_history.filter(or_(match_winners.c.user_id == filter_user_id, match_losers.c.user_id == filter_user_id))
     
     return match_history
 
@@ -269,4 +274,72 @@ class UserMatchHistoryStore(AutoVerifiedRequestHandler):
         finally:
             session.close()
 
+class HeadToHeadStore(AutoVerifiedRequestHandler):
+    def get(self, user1, user2):
+        username = self.get_current_user()
 
+        if username is None:
+            self.validate_user()
+            return
+
+        user = User.get_user(username)
+
+        if user.permission_level < constants.PERMISSION_LEVEL_USER:
+            self.render("denied.html", user=user)
+            return
+
+
+        if not (user1 and user2):
+            raise ValueError("Two users are required")
+        # query items
+
+        raw_range = self.request.headers.get('Range', '')
+        m = range_expression.match(raw_range)
+
+        if m is not None:
+            start = int(m.group('lower'))
+            stop = int(m.group('upper')) + 1
+        else:
+            start = 0
+            stop = -1
+
+        raw_query = self.request.query
+        m = sorting_expression.match(raw_query)
+
+        if m is not None:
+                direction = m.group('direction')
+                column = m.group('column')
+        else:
+                direction = '-'
+                column = "date"
+
+        if column not in ["id", "date", "winner_id", "winner_score", "winner_displayname", "opponent_id", "opponent_score", "opponent_displayname"]:
+            column = "date"
+
+        if direction == '-':
+                direction = desc
+        else:
+                direction = asc
+
+        session = SessionFactory()
+        try:
+            query = get_match_history_query(session, [user1, user2])
+
+            total = query.count()
+
+            query = query.order_by(direction(column))
+
+            query = query.slice(start, stop)
+
+            result = query.all()
+
+            result = resultdict(result)
+
+            data = "{}&& "+json.dumps(result)
+            self.set_header('Content-range', 'items {}-{}/{}'.format(start, stop, total))
+            self.set_header('Content-length', len(data))
+            self.set_header('Content-type', 'application/json')
+            self.write(data)
+
+        finally:
+            session.close()
