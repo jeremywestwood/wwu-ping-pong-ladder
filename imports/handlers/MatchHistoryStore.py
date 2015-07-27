@@ -13,6 +13,7 @@ from database.Match import Match
 from database.Game import Game
 from database.Score import Score
 from database.Participation import Participation
+from database.User import User
 
 import constants
 
@@ -275,7 +276,7 @@ class UserMatchHistoryStore(AutoVerifiedRequestHandler):
             session.close()
 
 class HeadToHeadStore(AutoVerifiedRequestHandler):
-    def get(self, user1, user2):
+    def get(self, user1, user2, summary=False):
         username = self.get_current_user()
 
         if username is None:
@@ -291,6 +292,9 @@ class HeadToHeadStore(AutoVerifiedRequestHandler):
 
         if not (user1 and user2):
             raise ValueError("Two users are required")
+
+        user1 = User.by_id(user1)
+        user2 = User.by_id(user2)
         # query items
 
         raw_range = self.request.headers.get('Range', '')
@@ -323,7 +327,7 @@ class HeadToHeadStore(AutoVerifiedRequestHandler):
 
         session = SessionFactory()
         try:
-            query = get_match_history_query(session, [user1, user2])
+            query = get_match_history_query(session, [user1.id, user2.id])
 
             total = query.count()
 
@@ -333,7 +337,32 @@ class HeadToHeadStore(AutoVerifiedRequestHandler):
 
             result = query.all()
 
-            result = resultdict(result)
+            if summary:
+                score_dict = {'won': 0, 'lost': 0, 'points_scored': 0, 'difference': 0, 'form': ''}
+                sum_dict = { user1.id: score_dict.copy(), user2.id: score_dict.copy() }
+
+                for res in result:
+                    sum_dict[res.winner_id]['won'] += 1
+                    sum_dict[res.winner_id]['points_scored'] += res.winner_score
+                    sum_dict[res.winner_id]['difference'] += res.winner_score-res.opponent_score
+                    sum_dict[res.winner_id]['form'] = 'W' + sum_dict[res.winner_id]['form']
+                    sum_dict[res.opponent_id]['lost'] += 1
+                    sum_dict[res.opponent_id]['points_scored'] += res.opponent_score
+                    sum_dict[res.opponent_id]['difference'] += res.opponent_score-res.winner_score
+                    sum_dict[res.opponent_id]['form'] = 'L' + sum_dict[res.opponent_id]['form']
+
+                result = []
+                for player in sum_dict:
+                    user = user1 if player==user1.id else user2
+                    player_dict = sum_dict[player]
+                    player_dict['form'] = player_dict['form'][-5:]
+                    player_dict.update({'id': player, 'displayname': user.displayname})
+                    result.append(player_dict)
+                start = 0
+                stop = 1
+                total = 2
+            else:
+                result = resultdict(result)
 
             data = "{}&& "+json.dumps(result)
             self.set_header('Content-range', 'items {}-{}/{}'.format(start, stop, total))

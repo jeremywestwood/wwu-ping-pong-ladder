@@ -89,6 +89,14 @@ function(parser, domReady, ready, FilteringSelect, BorderContainer, ContentPane,
 
 
             head_to_head_grid.setStore(matchStore);
+
+            var summary_store = new JsonRest({
+                target: '/Leaderboard/Head-to-Head/data/' + user1 + '/' + user2 + '/summary'
+            })
+
+            summaryStore = ObjectStore({objectStore: summary_store });
+
+            head_to_head_summary_grid.setStore(summaryStore);
         }
         var structure = [
             {name: 'Date', field: 'date', width: '25%', formatter: dateFormatter},
@@ -97,9 +105,21 @@ function(parser, domReady, ready, FilteringSelect, BorderContainer, ContentPane,
         ];
         head_to_head_grid.set('structure', structure);
 
-        if ({{ user2 }}!='None' && {{ user1 }} != 'None')
+        var structure = [
+            {name: 'Name', field: 'displayname', width: '20%'},
+            {name: 'Won', field: 'won', width: '15%'},
+            {name: 'Lost', field: 'lost', width: '15%'},
+            {name: 'Points Scored', field: 'points_scored', width: '15%'},
+            {name: 'Difference', field: 'difference', width: '15%'},
+            {name: 'Form', field: 'form', width: '15%'}
+        ];
+
+        head_to_head_summary_grid.set('structure', structure);
+
+        if ({{ 'true' if user2 else 'false' }} && {{ 'true' if user1 else 'false' }})
             updateGrid();
         head_to_head_grid.startup();
+        head_to_head_summary_grid.startup();
     });
 });
 
@@ -113,11 +133,11 @@ function(parser, domReady, ready, FilteringSelect, BorderContainer, ContentPane,
             <form data-dojo-type="dojox/form/Manager" id="head_to_head_form">
             Choose the opponents.
             <br>
-            <input data-dojo-type="dijit/form/FilteringSelect" name="userSelect1" id="userSelect1" required="true" value="{{ user1 }}"
+            <input data-dojo-type="dijit/form/FilteringSelect" name="userSelect1" id="userSelect1" required="true" value="{{ user1 if user1 else ''}}"
                     data-dojo-props="store: userStore, searchAttr:'displayname', labelAttr:'displayname', labelType:'html', searchDelay: 400,
                                      required:true, invalidMessage:'Opponents must be different users.'" />
             VS
-            <input data-dojo-type="dijit/form/FilteringSelect" name="userSelect2" id="userSelect2" required="true" value="{{ user2 }}"
+            <input data-dojo-type="dijit/form/FilteringSelect" name="userSelect2" id="userSelect2" required="true" value="{{ user2 if user2 else ''}}"
                     data-dojo-props="store: userStore, searchAttr:'displayname', labelAttr:'displayname', labelType:'html', searchDelay: 400,
                                      required:true, invalidMessage:'Opponents must be different users.'" />
         <button data-dojo-type="dijit/form/Button" id="view_button" data-dojo-props="iconClass:'icon icon_record'" type="button">View</button>
@@ -127,16 +147,29 @@ function(parser, domReady, ready, FilteringSelect, BorderContainer, ContentPane,
 
 {% block body %}
 
-<table data-dojo-type="dojox/grid/DataGrid" data-dojo-id="head_to_head_grid" data-dojo-props="region:'center'">
-  <thead>
-    <tr>
-      <th field="date" width="20%">Date</th>
-      <th field="opponents" width="65%">Victor</th>
-      <th field="outcome" width="15%">Outcome</th>
-    </tr>
-  </thead>
-</table>
-
+<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+        <table data-dojo-type="dojox/grid/DataGrid" data-dojo-id="head_to_head_summary_grid" data-dojo-props="region:'top'" style="height:10%">
+      <thead>
+        <tr>
+          <th field="displayname" width="20%">Name</th>
+          <th field="won" width="15%">Won</th>
+          <th field="lost" width="15%">Lost</th>
+          <th field="points_score" width="15%">Points Scored</th>
+          <th field="difference" width="15%">Difference</th>
+          <th field="form" width="15%">Form</th>
+        </tr>
+      </thead>
+    </table>
+    <table data-dojo-type="dojox/grid/DataGrid" data-dojo-id="head_to_head_grid" data-dojo-props="region:'center'" style="height:80%">
+      <thead>
+        <tr>
+          <th field="date" width="20%">Date</th>
+          <th field="opponents" width="65%">Victor</th>
+          <th field="outcome" width="15%">Outcome</th>
+        </tr>
+      </thead>
+    </table>
+</div>
 {% end %}
 
 {% block cookie_crumb_bar %}
