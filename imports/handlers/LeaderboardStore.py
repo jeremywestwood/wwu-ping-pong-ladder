@@ -178,7 +178,7 @@ class LeaderboardStore(AutoVerifiedRequestHandler):
                     res['streak'] = '%s%s' % (last_game, game_history.index(opposite) if  opposite in game_history else len(game_history))
                     if column == 'rating':
                         res['rank_change'] = (previous_ranking[res['id']][0]- i) if previous_ranking.has_key(res['id']) else None
-                    res['rating_change'] = (previous_ranking[res['id']][1]- res['rating']) if previous_ranking.has_key(res['id']) else None
+                    res['rating_change'] = (res['rating']-previous_ranking[res['id']][1]) if previous_ranking.has_key(res['id']) else None
 
                 data = "{}&& "+json.dumps(result)
                 self.set_header('Content-range', 'items {}-{}/{}'.format(start, stop, total))
