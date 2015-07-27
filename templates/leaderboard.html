@@ -42,16 +42,26 @@
             function percentageFormatter(num, rowIndex){
                 return num + ' %'
             }
+
+
+            function rankChangeFormatter(rank_change, rowIndex){
+                if (rank_change>0)
+                    return '<span style="color:green"> ▲' + rank_change +' </span>';
+                if (rank_change<0)
+                    return '<span style="color:red"> ▼' + Math.abs(rank_change) +'</span>';
+                return '<span style="color:silver"> = </span>';
+            }
             
             var structure = [
                 {name: '#', field: 'order', width: '5%'},
-                {name: 'Name', field: 'displayname', width: '25%'},
+                {name: 'Name', field: 'displayname', width: '20%'},
                 {name: 'Games', field: 'games', width: '10%'},
                 {name: 'Wins', field: 'wins', width: '10%'},
                 {name: 'Win Percentage', field: 'win_percentage', width: '10%', formatter: percentageFormatter},
                 {name: 'Rating', field: 'rating', width: '15%', formatter: ratingFormatter},
                 {name: 'Form', field: 'form', width: '10%'},
-                {name: 'Streak', field: 'streak', width: '5%'}
+                {name: 'Streak', field: 'streak', width: '5%'},
+                {name: 'Change', field: 'rank_change', width: '5%', formatter: rankChangeFormatter}
             ];
             
             leaderboard_grid.set('escapeHTMLInData', false);
@@ -79,13 +89,14 @@
   <thead>
     <tr>
       <th field="order" width="5%">#</th>
-      <th field="displayname" width="25%">Name</th>
+      <th field="displayname" width="20%">Name</th>
       <th field="games" width="10%">Games</th>
         <th field="wins" width="10%">Wins</th>
         <th field="win_percentage" width="10%">Win Percentage</th>
       <th field="rating" width="15%">Rating</th>
         <th field="form" width="10%">Form</th>
         <th field="streak" width="5%">Streak</th>
+        <th field="rank_change" width="5%">Change</th>
     </tr>
   </thead>
 </table>

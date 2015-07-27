@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy.orm import aliased
 from FixedUserRequestHandler import AutoVerifiedRequestHandler
 import json
@@ -19,7 +20,7 @@ import constants
 
 from resultdict import resultdict
 
-def get_leaderboard_query(session):
+def get_leaderboard_query(session, at_date=None):
     participation_matches = session.query( Participation.user_id.label("user_id"), 
                                            Match.id.label("match_id"), 
                                            Match.date_recorded.label("date") ).\
@@ -27,7 +28,11 @@ def get_leaderboard_query(session):
                             
     most_recent_match_date = session.query( participation_matches.c.user_id.label("user_id"),
                                             func.max(participation_matches.c.date).label("date") ).\
-                            group_by( participation_matches.c.user_id ).subquery()
+                            group_by( participation_matches.c.user_id )
+
+    if at_date is not None:
+        most_recent_match_date = most_recent_match_date.filter(participation_matches.c.date < at_date)
+    most_recent_match_date =most_recent_match_date.subquery()
                             
     most_recent_matches = session.query( most_recent_match_date.c.user_id.label("user_id"),
                                          participation_matches.c.match_id.label("match_id"),
@@ -150,6 +155,15 @@ class LeaderboardStore(AutoVerifiedRequestHandler):
 
                 result = resultdict(result)
 
+                today = datetime.now().date()
+                today = datetime(today.year, today.month, today.day)
+                today = int(today.strftime('%s'))
+
+                previous_board = get_leaderboard_query(session, at_date = today).order_by(desc('rating')).all()
+                previous_ranking = {}
+                for pos, item in enumerate(previous_board,1):
+                    previous_ranking[item.id] = pos
+
                 for i,res in enumerate(result,1):
                     res['order']= i
                     s1 = aliased(Score)
@@ -162,6 +176,8 @@ class LeaderboardStore(AutoVerifiedRequestHandler):
                     opposite = 'W' if last_game == 'L' else 'L'
                     res['form'] = ''.join(reversed(game_history[0:5]))
                     res['streak'] = '%s%s' % (last_game, game_history.index(opposite) if  opposite in game_history else len(game_history))
+                    if column == 'rating':
+                        res['rank_change'] = (previous_ranking[res['id']]- i) if previous_ranking.has_key(res['id']) else None
 
                 data = "{}&& "+json.dumps(result)
                 self.set_header('Content-range', 'items {}-{}/{}'.format(start, stop, total))
