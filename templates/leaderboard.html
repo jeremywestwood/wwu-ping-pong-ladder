@@ -36,6 +36,9 @@
             });
             
             function ratingFormatter(rating, rowIndex) {
+                var item = leaderboard_grid.getItem(rowIndex);
+                if (item.rating_change.toFixed(3)!=0)
+                    return rating.toFixed(3) + ' <span style="color:gray">(' + item.rating_change.toFixed(3) + ')</span>';
                 return rating.toFixed(3);
             }
 
