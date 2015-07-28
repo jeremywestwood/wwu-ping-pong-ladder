@@ -133,13 +133,14 @@ class LeaderboardStore(AutoVerifiedRequestHandler):
                     direction = '-'
                     column = "rating"
                     
-            if column not in ["id", "displayname", "games", "wins", "win_percentage", "rating"]:
+            if column not in ["id", "displayname", "games", "wins", "win_percentage", "rating", "form", "streak",
+                              'rank_change', 'order']:
                 column = "rating"
 
             if direction == '-':
-                    direction = desc
+                    direction = 'desc'
             else:
-                    direction = asc
+                    direction = 'asc'
             
             session = SessionFactory()
             try:
@@ -147,7 +148,7 @@ class LeaderboardStore(AutoVerifiedRequestHandler):
                         
                 total = query.count()
             
-                query = query.order_by(direction(column))
+                # query = query.order_by(direction(column))
                         
                 query = query.slice(start, stop)
                         
@@ -164,6 +165,7 @@ class LeaderboardStore(AutoVerifiedRequestHandler):
                 for pos, item in enumerate(previous_board,1):
                     previous_ranking[item.id] = (pos, item.rating)
 
+                result = sorted(result, key= lambda k:k['rating'])[::-1]
                 for i,res in enumerate(result,1):
                     res['order']= i
                     s1 = aliased(Score)
@@ -176,9 +178,13 @@ class LeaderboardStore(AutoVerifiedRequestHandler):
                     opposite = 'W' if last_game == 'L' else 'L'
                     res['form'] = ''.join(reversed(game_history[0:5]))
                     res['streak'] = '%s%s' % (last_game, game_history.index(opposite) if  opposite in game_history else len(game_history))
-                    if column == 'rating':
-                        res['rank_change'] = (previous_ranking[res['id']][0]- i) if previous_ranking.has_key(res['id']) else None
+                    res['rank_change'] = (previous_ranking[res['id']][0]- i) if previous_ranking.has_key(res['id']) else None
                     res['rating_change'] = (res['rating']-previous_ranking[res['id']][1]) if previous_ranking.has_key(res['id']) else None
+
+                result = sorted(result, key= sort_dict.get(column,lambda k:k[column]))
+                if direction == 'desc':
+                    result = result[::-1]
+
 
                 data = "{}&& "+json.dumps(result)
                 self.set_header('Content-range', 'items {}-{}/{}'.format(start, stop, total))
@@ -189,3 +195,7 @@ class LeaderboardStore(AutoVerifiedRequestHandler):
             finally:
                 session.close()
 
+sort_dict = {
+    'streak': lambda k: int(('-' if k['streak'][0] == 'L' else '') + k['streak'][1:]),
+    'form': lambda k: k['form'][::-1]
+}
