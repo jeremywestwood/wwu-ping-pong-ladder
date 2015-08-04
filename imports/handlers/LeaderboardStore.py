@@ -187,7 +187,7 @@ class LeaderboardStore(AutoVerifiedRequestHandler):
                     result = result[::-1]
 
                 best_streak = None
-                for res in sorted(result, key= sort_dict.get(column,lambda k:k[column]))[::-1]:
+                for res in sorted(result, key= sort_dict.get(column,lambda k:k['streak']))[::-1]:
                     if best_streak is None or res['streak'] == best_streak:
                         res['hot_streak'] = True
                         best_streak = res['streak']
