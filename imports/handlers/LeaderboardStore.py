@@ -180,11 +180,19 @@ class LeaderboardStore(AutoVerifiedRequestHandler):
                     res['streak'] = '%s%s' % (last_game, game_history.index(opposite) if  opposite in game_history else len(game_history))
                     res['rank_change'] = (previous_ranking[res['id']][0]- i) if previous_ranking.has_key(res['id']) else None
                     res['rating_change'] = (res['rating']-previous_ranking[res['id']][1]) if previous_ranking.has_key(res['id']) else None
+                    res['hot_streak'] = False
 
                 result = sorted(result, key= sort_dict.get(column,lambda k:k[column]))
                 if direction == 'desc':
                     result = result[::-1]
 
+                best_streak = None
+                for res in sorted(result, key= sort_dict.get(column,lambda k:k[column]))[::-1]:
+                    if best_streak is None or res['streak'] == best_streak:
+                        res['hot_streak'] = True
+                        best_streak = res['streak']
+                    else:
+                        break
 
                 data = "{}&& "+json.dumps(result)
                 self.set_header('Content-range', 'items {}-{}/{}'.format(start, stop, total))

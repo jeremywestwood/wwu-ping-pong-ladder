@@ -28,7 +28,7 @@
         });
         
         store = ObjectStore({objectStore: store});
-        
+
         ready(function() {
             on(leaderboard_grid, "rowClick", function(evt) {
                 var item = leaderboard_grid.getItem(evt.rowIndex);
@@ -54,9 +54,16 @@
                     return '<span style="color:red"> ▼' + Math.abs(rank_change) +'</span>';
                 return '<span style="color:silver"> = </span>';
             }
+
+            function hotStreakFormatter(val, rowIndx, cell){
+                var item = leaderboard_grid.getItem(rowIndx);
+                if (item['hot_streak'])
+                    cell.customClasses.push('hot_streak');
+                return val
+            }
             
             var structure = [
-                {name: '#', field: 'order', width: '5%'},
+                {name: '#', field: 'order', width: '5%', formatter: hotStreakFormatter},
                 {name: 'Name', field: 'displayname', width: '20%'},
                 {name: 'Games', field: 'games', width: '10%'},
                 {name: 'Wins', field: 'wins', width: '10%'},
