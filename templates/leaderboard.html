@@ -57,9 +57,12 @@
 
             function hotStreakFormatter(val, rowIndx, cell){
                 var item = leaderboard_grid.getItem(rowIndx);
+                contents = "<span>" + val + "</span>"
                 if (item['hot_streak'])
-                    cell.customClasses.push('hot_streak');
-                return val
+                    contents = contents + '<img style="float:right" src="/static/images/flame.png" alt="Hot Streak" height="20" width="20"/>'
+                if (item['trophy_holder'])
+                    contents = contents + '<img style="float:right" src="/static/images/trophy.png" alt="Floating Trophy" height="20" width="20"/>'
+                return contents
             }
             
             var structure = [

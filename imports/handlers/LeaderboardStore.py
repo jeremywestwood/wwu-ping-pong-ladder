@@ -15,6 +15,7 @@ from database.Match import Match
 from database.Score import Score
 from database.Participation import Participation
 from database.TrueSkillCache import TrueSkillCache
+from database.FloatingTrophyCache import FloatingTrophyCache
 
 import constants
 
@@ -156,6 +157,8 @@ class LeaderboardStore(AutoVerifiedRequestHandler):
 
                 result = resultdict(result)
 
+                trophy_holder = session.query(FloatingTrophyCache).order_by(FloatingTrophyCache.id.desc()).first()
+
                 today = datetime.now().date()
                 today = datetime(today.year, today.month, today.day)
                 today = int(today.strftime('%s'))
@@ -181,6 +184,7 @@ class LeaderboardStore(AutoVerifiedRequestHandler):
                     res['rank_change'] = (previous_ranking[res['id']][0]- i) if previous_ranking.has_key(res['id']) else None
                     res['rating_change'] = (res['rating']-previous_ranking[res['id']][1]) if previous_ranking.has_key(res['id']) else None
                     res['hot_streak'] = False
+                    res['trophy_holder'] = trophy_holder is not None and trophy_holder.user_id==res['id']
 
                 result = sorted(result, key= sort_dict.get(column,lambda k:k[column]))
                 if direction == 'desc':

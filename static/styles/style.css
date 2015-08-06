@@ -29,9 +29,3 @@ html, body {
 #message {
     margin: 0px auto 0px auto;
 }
-
-.hot_streak {
-    background: url(/static/images/flame.png);
-    background-repeat: no-repeat;
-    background-position: center;
-}
