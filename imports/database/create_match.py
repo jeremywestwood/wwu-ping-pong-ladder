@@ -9,7 +9,8 @@ from database.Game import Game
 from database.Score import Score
 from database.Participation import Participation
 from database.TrueSkillCache import TrueSkillCache
-        
+from database.FloatingTrophyCache import FloatingTrophyCache
+
 import trueskill
 import time
 
@@ -49,7 +50,7 @@ def get_most_recent_ratings(user_id):
 def create_match(session, user1, user2, timestamp, games):
     """Creates and adds a match to the session given two users a unix timestamp and a list of score pairs."""
     match = Match(timestamp, int(time.time()))
-    
+
     p1 = Participation()
     user1.participations.append(p1)
     match.participations.append(p1)
@@ -97,5 +98,25 @@ def create_match(session, user1, user2, timestamp, games):
         user2.scores.append(s2)
         
         match.games.append(game)
-        
+
+    # this checks to see if a floating trophy exists, if not it assigns
+    # it assigns it to the winner, if it does then if the
+    # holder has lost it reassigns it
+    trophy_holder = session.query(FloatingTrophyCache).order_by(FloatingTrophyCache.id.desc()).first()
+    if trophy_holder is None:
+        floating_trophy = FloatingTrophyCache()
+        match.floating_trophy.append(floating_trophy)
+        if p1_wins > p2_wins:
+            user1.floating_trophies.append(floating_trophy)
+        else:
+            user2.floating_trophies.append(floating_trophy)
+    elif trophy_holder.user_id == user2.id and p1_wins:
+        floating_trophy = FloatingTrophyCache()
+        match.floating_trophy.append(floating_trophy)
+        user1.floating_trophies.append(floating_trophy)
+    elif trophy_holder.user_id == user1.id and p2_wins:
+        floating_trophy = FloatingTrophyCache()
+        match.floating_trophy.append(floating_trophy)
+        user2.floating_trophies.append(floating_trophy)
+
     session.add(match)
