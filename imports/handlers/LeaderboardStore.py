@@ -189,7 +189,7 @@ class LeaderboardStore(AutoVerifiedRequestHandler):
                 best_streak = None
 
                 for res in sorted(result, key= sort_dict.get('streak'))[::-1]:
-                    if best_streak is None or res['streak'] == best_streak:
+                    if (best_streak is None and int(res['streak'][1:])>4) or res['streak'] == best_streak:
                         res['hot_streak'] = True
                         best_streak = res['streak']
                     else:
