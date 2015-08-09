@@ -61,6 +61,7 @@ function(parser, domReady, ready, FilteringSelect, BorderContainer, ContentPane,
                     var color = "#888888";
                     if (response.type == "error") {
                         color = "#FF9933";
+                        record_match_button.set('disabled', false);
                     } else if (response.type == "success") {
                         color = "#99FF33";
                         
