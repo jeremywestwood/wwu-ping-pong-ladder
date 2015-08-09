@@ -27,7 +27,8 @@
             
             on(matches_grid, "rowClick", function(evt) {
                 var item = matches_grid.getItem(evt.rowIndex);
-                document.location.href = '/Leaderboard/Match-History/' + item.id;
+                document.location.href = '/Leaderboard/Head-to-Head/' + item.winner_id + '/' + item.opponent_id;
+{#                document.location.href = '/Leaderboard/Match-History/' + item.id;#}
             });
             
             function dateFormatter(date, rowIndex) {
