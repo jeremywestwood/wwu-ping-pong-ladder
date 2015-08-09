@@ -181,8 +181,8 @@ class LeaderboardStore(AutoVerifiedRequestHandler):
                     opposite = 'W' if last_game == 'L' else 'L'
                     res['form'] = ''.join(reversed(game_history[0:5]))
                     res['streak'] = '%s%s' % (last_game, game_history.index(opposite) if  opposite in game_history else len(game_history))
-                    res['rank_change'] = (previous_ranking[res['id']][0]- i) if previous_ranking.has_key(res['id']) else None
-                    res['rating_change'] = (res['rating']-previous_ranking[res['id']][1]) if previous_ranking.has_key(res['id']) else None
+                    res['rank_change'] = (previous_ranking[res['id']][0]- i) if previous_ranking.has_key(res['id']) else 0
+                    res['rating_change'] = (res['rating']-previous_ranking[res['id']][1]) if previous_ranking.has_key(res['id']) else 0
                     res['hot_streak'] = False
                     res['trophy_holder'] = trophy_holder is not None and trophy_holder.user_id==res['id']
 
