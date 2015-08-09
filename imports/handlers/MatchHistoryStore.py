@@ -332,8 +332,8 @@ class HeadToHeadStore(AutoVerifiedRequestHandler):
             total = query.count()
 
             query = query.order_by(direction(column))
-
-            query = query.slice(start, stop)
+            if not summary:
+                query = query.slice(start, stop)
 
             result = query.all()
 
