@@ -15,7 +15,7 @@ class RecordMatchHandler(AutoVerifiedRequestHandler):
         data = json.dumps({'type': outcome, 'msg': message})
         self.finish(data)
     
-    def get(self):
+    def get(self, user1=None, user2=None):
         username = self.get_current_user()
         
         if username is None:
@@ -23,12 +23,12 @@ class RecordMatchHandler(AutoVerifiedRequestHandler):
             return
             
         user = User.get_user(username)
-                
+
         if user.permission_level < constants.PERMISSION_LEVEL_USER:
             self.render("denied.html", user=user)
             return
         
-        self.render("record-match.html", user=user)
+        self.render("record-match.html", user=user, user1=user1, user2=user2)
         
     def post(self):
         username = self.get_current_user()

@@ -40,6 +40,7 @@ handlers = [
     (r'/Leaderboard/Match-History/(\d+)$', GeneralInfoHandler),
     
     (r'/Leaderboard/Record-Match$', RecordMatchHandler),
+    (r'/Leaderboard/Record-Match/(\d+)/(\d+)$$', RecordMatchHandler),
     (r'/Leaderboard/User-Settings$', UserSettingsHandler),
 
     (r'/Leaderboard/Head-to-Head$', HeadToHeadHandler),

@@ -29,3 +29,7 @@ html, body {
 #message {
     margin: 0px auto 0px auto;
 }
+
+.selected_user {
+    color: blue;
+}

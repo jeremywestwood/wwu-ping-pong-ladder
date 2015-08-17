@@ -28,12 +28,36 @@
         });
         
         store = ObjectStore({objectStore: store});
+        selected_users = [];
 
         ready(function() {
             on(leaderboard_grid, "rowClick", function(evt) {
+                var row = evt.rowIndex;
+                var item = leaderboard_grid.getItem(evt.rowIndex);
+                var previous_selection = selected_users[1];
+                if (!(selected_users[0] == item) && !(selected_users[1] == item)) {
+                    selected_users[1] = selected_users[0];
+                    selected_users[0] = item;
+                }
+                else{
+                    selected_users.splice(selected_users.indexOf(item),1)
+                }
+                leaderboard_grid.updateRowStyles(leaderboard_grid.getItemIndex(previous_selection));
+
+            });
+            on(leaderboard_grid, "rowDblClick", function(evt) {
                 var item = leaderboard_grid.getItem(evt.rowIndex);
                 document.location.href = '/Leaderboard/' + item.id;
             });
+            on(leaderboard_grid, 'styleRow', function(row){
+                    var item = leaderboard_grid.getItem(row.index);
+                    if (item){
+                        if (selected_users[0] == item || selected_users[1] == item){
+                            row.customClasses = row.customClasses + " selected_user";
+                        }
+                    }
+                });
+
             
             function ratingFormatter(rating, rowIndex) {
                 var item = leaderboard_grid.getItem(rowIndex);
@@ -57,13 +81,21 @@
 
             function hotStreakFormatter(val, rowIndx, cell){
                 var item = leaderboard_grid.getItem(rowIndx);
-                contents = "<span>" + val + "</span>"
+                contents = "<span>" + val + "</span>";
                 if (item['hot_streak'])
                     contents = contents + '<img style="float:right" src="/static/images/flame.png" alt="Hot Streak" height="20" width="20"/>'
                 if (item['trophy_holder'])
                     contents = contents + '<img style="float:right" src="/static/images/trophy.png" alt="Floating Trophy" height="20" width="20"/>'
                 return contents
             }
+
+            getUrl = function getUrl(url, user1, user2){
+                var url = '/Leaderboard/' + url;
+                if (user1 && user2)
+                    return url + '/'+user1.id + '/' + user2.id;
+                else
+                    return url;
+            };
             
             var structure = [
                 {name: '#', field: 'order', width: '65px', formatter: hotStreakFormatter},
@@ -89,9 +121,9 @@
 {% block action_bar %}
 <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'">
     <center>
-        <button data-dojo-type="dijit/form/Button" onClick="document.location.href = '/Leaderboard/Record-Match';" data-dojo-props="iconClass:'icon icon_record'" type="button">Record Match</button>
+        <button data-dojo-type="dijit/form/Button" onClick="document.location.href = getUrl('Record-Match', selected_users[0], selected_users[1])" data-dojo-props="iconClass:'icon icon_record'" type="button">Record Match</button>
         <button data-dojo-type="dijit/form/Button" onClick="document.location.href = '/Leaderboard/Match-History';" data-dojo-props="iconClass:'icon icon_history'" type="button">Match History</button>
-        <button data-dojo-type="dijit/form/Button" onClick="document.location.href = '/Leaderboard/Head-to-Head';" data-dojo-props="iconClass:'icon icon_history'" type="button">Head-to-Head</button>
+        <button data-dojo-type="dijit/form/Button" onClick="document.location.href = getUrl('Head-to-Head', selected_users[0], selected_users[1])" data-dojo-props="iconClass:'icon icon_history'" type="button">Head-to-Head</button>
         <button data-dojo-type="dijit/form/Button" onClick="document.location.href = '/Leaderboard/User-Settings';" data-dojo-props="iconClass:'icon icon_settings'" type="button">Settings</button>
     </center>
 </div>

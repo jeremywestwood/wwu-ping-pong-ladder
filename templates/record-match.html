@@ -38,7 +38,7 @@ function(parser, domReady, ready, FilteringSelect, BorderContainer, ContentPane,
         var form = registry.byId("record_match_form");
         var userSelect1 = registry.byId("userSelect1");
         var userSelect2 = registry.byId("userSelect2");
-        
+
         function validateOpponents(value, constraints) {
             return (userSelect1.value != userSelect2.value);
         }
@@ -113,12 +113,12 @@ function(parser, domReady, ready, FilteringSelect, BorderContainer, ContentPane,
         <center>
             Choose the opponents.
             <br>
-            <input data-dojo-type="dijit/form/FilteringSelect" name="userSelect1" id="userSelect1" required="true"
+            <input data-dojo-type="dijit/form/FilteringSelect" name="userSelect1" id="userSelect1" required="true" value="{{ user1 if user1 else ''}}"
                     data-dojo-props="store: userStore, searchAttr:'displayname', labelAttr:'displayname', labelType:'html', searchDelay: 400, 
                                      required:true, invalidMessage:'Opponents must be different users.'" />
             VS
-            <input data-dojo-type="dijit/form/FilteringSelect" name="userSelect2" id="userSelect2" required="true"
-                    data-dojo-props="store: userStore, searchAttr:'displayname', labelAttr:'displayname', labelType:'html', searchDelay: 400, 
+            <input data-dojo-type="dijit/form/FilteringSelect" name="userSelect2" id="userSelect2" required="true" value="{{ user2 if user2 else ''}}"
+                    data-dojo-props="store: userStore, searchAttr:'displayname', labelAttr:'displayname', labelType:'html', searchDelay: 400,
                                      required:true, invalidMessage:'Opponents must be different users.'" />
             <br>
             Choose when the match took place.
