@@ -3,9 +3,15 @@ from FixedUserRequestHandler import AutoVerifiedRequestHandler
 import constants
 
 from database.User import User
+from database.Match import Match
+from database.Game import Game
+from database.Participation import Participation
+from database.Score import Score
+from database.TrueSkillCache import TrueSkillCache
 from database.create_match import create_match, get_most_recent_ratings
 from database.SessionFactory import SessionFactory
 
+import sqlalchemy
 import datetime
 import time
 import json
@@ -99,5 +105,28 @@ class RecordMatchHandler(AutoVerifiedRequestHandler):
 
             self.result("success", msg)
             
+        finally:
+            session.close()
+
+class RemoveLastMatchHandler(AutoVerifiedRequestHandler):
+    def result(self, outcome, message):
+        data = json.dumps({'type': outcome, 'msg': message})
+        self.finish(data)
+
+    def post(self):
+        session = SessionFactory()
+        try:
+            max_match_id = session.query(sqlalchemy.func.max(Match.id)).one()[0]
+            match = session.query(Match).filter(Match.id==max_match_id).all()
+            games = session.query(Game).filter(Game.match_id==max_match_id).all()
+            partipations = session.query(Participation).filter(Participation.match_id==max_match_id).all()
+            true_skill = session.query(TrueSkillCache).filter(TrueSkillCache.match_id==max_match_id).all()
+            scores = []
+            for game in games:
+                scores += session.query(Score).filter(Score.game_id==game.id).all()
+            for row in match + games + partipations + true_skill + scores:
+                session.delete(row)
+            session.commit()
+            self.result("success", "Match #%s removed." % max_match_id)
         finally:
             session.close()

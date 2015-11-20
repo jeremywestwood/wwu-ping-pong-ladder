@@ -83,6 +83,28 @@ function(parser, domReady, ready, FilteringSelect, BorderContainer, ContentPane,
                 
             }
         });
+        var undo_last_match = registry.byId('undo_last_match');
+        on(undo_last_match, "click", function(evt){
+            undo_last_match.set('disabled', true);
+            request.post("/Leaderboard/Remove-Last-Match", {
+                    handleAs: "json"
+                }).then(function(response){
+                if (response.type == "error") {
+                    color = "#FF9933";
+                } else if (response.type == "success") {
+                    color = "#99FF33";
+                }
+                message.innerHTML = response.msg;
+                    messageBar.style.background = color;
+                    messageBar.style.visibility = "visible";
+                    fx.fadeIn({ node: messageBar, duration: 1 }).play();
+
+                    setTimeout(function() {
+                        fx.fadeOut({ node: messageBar, duration: 1000 }).play();
+                    }, 10000);
+                undo_last_match.set('disabled', false)
+            })
+        })
     });
 });
 
@@ -134,10 +156,10 @@ function(parser, domReady, ready, FilteringSelect, BorderContainer, ContentPane,
     {% end %}
     <br>
 {% end %}
-                
             </fieldset>
         </center>
     </form>
+    <button data-dojo-type="dijit/form/Button" id="undo_last_match" data-dojo-props="iconClass:'icon icon_cancel'" style="float:right" type="button">Undo last match</button>
 </div>
 {% end %}
 
